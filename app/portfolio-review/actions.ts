@@ -1,4 +1,10 @@
 import {
+    GEMINI_DAILY_LIMIT,
+    GEMINI_MODEL,
+    GEMINI_PROVIDER,
+  } from "@/lib/gemini/config";
+  
+import {
     revalidatePath,
   } from "next/cache";
   
@@ -10,15 +16,7 @@ import {
     createClient,
   } from "@/lib/supabase/server";
   
-  export const GEMINI_PROVIDER =
-    "gemini";
-  
-  export const GEMINI_DAILY_LIMIT =
-    100;
-  
-  export const GEMINI_MODEL =
-    "gemini-2.5-flash";
-  
+
   type PositionRow = {
     id: string;
   
@@ -1086,29 +1084,64 @@ import {
   - Du darfst Risiken, Chancen und Beobachtungspunkte klar benennen.
   - Verwende Prozent- und Geldwerte konkret, wenn sie für die Analyse relevant sind.
   - Schreibe kompakt, aber substanziell.
+  - Hebe besonders wichtige Begriffe, Positionen, Risiken oder Entwicklungen sparsam mit Markdown-Fettschrift im Format **Begriff** hervor.
+  - Verwende Fettschrift gezielt. In der Regel reichen 2 bis 5 Hervorhebungen pro Abschnitt.
+  - Verwende keine Tabellen.
   
   Struktur:
   
   ## Kurzfazit
-  2 bis 4 Sätze.
+  Schreibe ein eigenständig verständliches Kurzfazit mit etwa 4 bis 6 Sätzen.
+  
+  Das Kurzfazit ist der wichtigste Teil des Reviews und wird im Dashboard standardmäßig sichtbar angezeigt, während die Detailanalyse zunächst eingeklappt sein kann.
+  
+  Es soll deshalb auch ohne die folgenden Abschnitte bereits ein klares Gesamtbild vermitteln.
+  
+  Beantworte darin möglichst kompakt:
+  - Wie ist das Portfolio insgesamt aufgestellt?
+  - Was ist aktuell die auffälligste Stärke oder positive Entwicklung?
+  - Was ist das wichtigste Risiko oder die größte Konzentration?
+  - Gibt es eine besonders relevante aktuelle Nachricht oder Entwicklung?
+  - Was sollte der Nutzer in nächster Zeit besonders beobachten?
+  
+  Nenne konkrete Portfolio-Zahlen, wenn sie für das Gesamtbild relevant sind.
+  
+  Priorisiere Erkenntnisse statt einer bloßen Aufzählung von Kennzahlen.
+  
+  Vermeide generische Aussagen wie "das Portfolio zeigt Chancen und Risiken".
+  
+  Formuliere stattdessen konkret, zum Beispiel mit Aussagen über Gewichtungen, Performance, Konzentrationen oder aktuelle externe Entwicklungen.
+  
+  Nutze innerhalb des Kurzfazits sparsam **Fettschrift**, um 2 bis 4 besonders wichtige Aussagen, Positionen oder Themen visuell hervorzuheben.
   
   ## Portfolio-Struktur
-  Die wichtigsten Aussagen zu Gewichtung, Konzentration und Diversifikation.
+  Analysiere die wichtigsten Aussagen zu Gewichtung, Konzentration und Diversifikation.
+  
+  Konzentriere dich auf tatsächlich relevante Besonderheiten. Nenne insbesondere große Positionsgewichte oder auffällige Abhängigkeiten.
   
   ## Auffällige Positionen
-  Die wichtigsten Gewinner, Verlierer oder besonders großen Positionen und weshalb sie relevant sind.
+  Ordne die wichtigsten Gewinner, Verlierer oder besonders großen Positionen ein und erkläre knapp, weshalb sie für das Gesamtportfolio relevant sind.
+  
+  Priorisiere wenige wirklich auffällige Positionen statt jede Position einzeln zu kommentieren.
   
   ## Aktuelle News & Einordnung
-  Nur die wichtigsten aktuellen Entwicklungen aus der Google-Suche und ihre mögliche Bedeutung für dieses konkrete Portfolio.
+  Nutze nur die wichtigsten aktuellen Entwicklungen aus der Google-Suche.
+  
+  Erkläre nicht nur die Nachricht selbst, sondern ihre mögliche Bedeutung für dieses konkrete Portfolio.
+  
+  Vermeide einen allgemeinen News-Überblick ohne Portfolio-Bezug.
   
   ## Risiken & Beobachtungspunkte
-  3 bis 6 konkrete Punkte, die in den nächsten Wochen relevant sein könnten.
+  Nenne 3 bis 6 konkrete Punkte, die in den nächsten Wochen relevant sein könnten.
   
-  ## Fazit
-  Ein kurzes abschließendes Gesamtbild.
+  Formuliere diese als klare Beobachtungspunkte und nicht als Kauf- oder Verkaufsempfehlungen.
   
   Die Antwort soll als gut lesbares Markdown zurückgegeben werden.
-  `.trim();
+  
+  Halte dich exakt an die genannten Überschriften und beginne immer mit:
+  
+  ## Kurzfazit
+    `.trim();
   }
   
   function redirectError(

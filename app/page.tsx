@@ -23,9 +23,12 @@ import { syncMarketData } from "@/app/market-data/actions";
 
 import {
   generatePortfolioReview,
+} from "@/app/portfolio-review/actions";
+
+import {
   GEMINI_DAILY_LIMIT,
   GEMINI_PROVIDER,
-} from "@/app/portfolio-review/actions";
+} from "@/lib/gemini/config";
 
 import {
   ALPHA_VANTAGE_DAILY_LIMIT,
@@ -1518,16 +1521,16 @@ export default async function Home(
             }
           />
 
-          <button
-            type="button"
-            className="button"
-          >
-            <Download
-              size={16}
-            />
+<Link
+  href="/reports"
+  className="button"
+>
+  <Download
+    size={16}
+  />
 
-            Report
-          </button>
+  Reports
+</Link>
 
           <LogoutButton />
         </div>

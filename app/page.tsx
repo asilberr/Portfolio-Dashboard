@@ -1970,280 +1970,219 @@ export default async function Home(
         </section>
       )}
 
-      <section
-        className="card"
+<section
+  className="card"
+  style={{
+    marginBottom: 20,
+  }}
+>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 18,
+      flexWrap: "wrap",
+      marginBottom: latestReview ? 18 : 0,
+    }}
+  >
+    <div>
+      <h2
         style={{
-          marginBottom:
-            20,
+          margin: 0,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
         }}
       >
-        <div
-          style={{
-            display:
-              "flex",
+        <Sparkles size={18} />
 
-            alignItems:
-              "flex-start",
+        KI-Portfolio-Review
+      </h2>
 
-            justifyContent:
-              "space-between",
+      <p
+        className="meta"
+        style={{
+          margin: "6px 0 0",
+          lineHeight: 1.5,
+        }}
+      >
+        Analyse deiner Portfolio-Kennzahlen mit aktuellen,
+        recherchierten Nachrichten.
+      </p>
+    </div>
 
-            gap:
-              18,
-
-            flexWrap:
-              "wrap",
-
-            marginBottom:
-              latestReview
-                ? 18
-                : 0,
-          }}
-        >
-          <div>
-            <h2
-              style={{
-                margin:
-                  0,
-
-                display:
-                  "flex",
-
-                alignItems:
-                  "center",
-
-                gap:
-                  8,
-              }}
-            >
-              <Sparkles
-                size={18}
-              />
-
-              KI-Portfolio-Review
-            </h2>
-
-            <p
-              className="meta"
-              style={{
-                margin:
-                  "6px 0 0",
-
-                lineHeight:
-                  1.5,
-              }}
-            >
-              Analyse deiner
-              Portfolio-Kennzahlen
-              mit aktuellen,
-              recherchierten
-              Nachrichten.
-            </p>
-          </div>
-
-          <form
-            action={
-              generatePortfolioReview
-            }
-          >
-            <button
-              type="submit"
-              className={
-                latestReview
-                  ? "button"
-                  : "button primary"
-              }
-            >
-              {latestReview ? (
-                <RefreshCw
-                  size={15}
-                />
-              ) : (
-                <Sparkles
-                  size={15}
-                />
-              )}
-
-              {latestReview
-                ? "Review aktualisieren"
-                : "KI-Review erstellen"}
-            </button>
-          </form>
-        </div>
-
+    <form action={generatePortfolioReview}>
+      <button
+        type="submit"
+        className={
+          latestReview
+            ? "button"
+            : "button primary"
+        }
+      >
         {latestReview ? (
+          <RefreshCw size={15} />
+        ) : (
+          <Sparkles size={15} />
+        )}
+
+        {latestReview
+          ? "Review aktualisieren"
+          : "KI-Review erstellen"}
+      </button>
+    </form>
+  </div>
+
+  {latestReview ? (
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          flexWrap: "wrap",
+          marginBottom: 18,
+        }}
+      >
+        <span className="badge">
+          {latestReview.model}
+        </span>
+
+        <span className="meta">
+          Erstellt{" "}
+          {formatDateTime(
+            latestReview.created_at
+          )}
+        </span>
+
+        <span className="meta">
+          ·
+        </span>
+
+        <span className="meta">
+          {latestReview.position_count}
+          {" Positionen"}
+        </span>
+
+        {latestReview.portfolio_value_eur !==
+          null && (
           <>
+            <span className="meta">
+              ·
+            </span>
+
+            <span className="meta">
+              Depotwert{" "}
+              {formatMoney(
+                numeric(
+                  latestReview.portfolio_value_eur
+                )
+              )}
+            </span>
+          </>
+        )}
+      </div>
+
+      <ReviewContent
+        text={
+          latestReview.review_text
+        }
+      />
+
+      {Array.isArray(
+        latestReview.sources
+      ) &&
+        latestReview.sources.length >
+          0 && (
+          <details
+            style={{
+              marginTop: 18,
+              paddingTop: 14,
+              borderTop:
+                "1px solid #e7eaf0",
+            }}
+          >
+            <summary
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                color: "#697386",
+                fontSize: 12,
+                fontWeight: 650,
+                cursor: "pointer",
+                userSelect: "none",
+              }}
+            >
+              Quellen anzeigen
+              <span
+                style={{
+                  color: "#929aa7",
+                  fontWeight: 500,
+                }}
+              >
+                (
+                {
+                  latestReview
+                    .sources.length
+                }
+                )
+              </span>
+            </summary>
+
             <div
               style={{
-                display:
-                  "flex",
-
-                alignItems:
-                  "center",
-
-                gap:
-                  8,
-
-                flexWrap:
-                  "wrap",
-
-                marginBottom:
-                  18,
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                marginTop: 12,
+                paddingLeft: 2,
               }}
             >
-              <span className="badge">
-                {
-                  latestReview.model
+              {latestReview.sources.map(
+                (
+                  source,
+                  index
+                ) => {
+                  if (!source.url) {
+                    return null;
+                  }
+
+                  return (
+                    <a
+                      key={`${source.url}-${index}`}
+                      href={source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        color:
+                          "#3759a8",
+                        fontSize: 12,
+                        lineHeight: 1.45,
+                        textDecoration:
+                          "none",
+                        overflowWrap:
+                          "anywhere",
+                      }}
+                    >
+                      {source.title ??
+                        source.url}
+                    </a>
+                  );
                 }
-              </span>
-
-              <span className="meta">
-                Erstellt{" "}
-                {formatDateTime(
-                  latestReview.created_at
-                )}
-              </span>
-
-              <span className="meta">
-                ·
-              </span>
-
-              <span className="meta">
-                {
-                  latestReview.position_count
-                }
-                {" Positionen"}
-              </span>
-
-              {latestReview
-                .portfolio_value_eur !==
-                null && (
-                <>
-                  <span className="meta">
-                    ·
-                  </span>
-
-                  <span className="meta">
-                    Depotwert{" "}
-                    {formatMoney(
-                      numeric(
-                        latestReview.portfolio_value_eur
-                      )
-                    )}
-                  </span>
-                </>
               )}
             </div>
-
-            <ReviewContent
-              text={
-                latestReview.review_text
-              }
-            />
-
-            {Array.isArray(
-              latestReview.sources
-            ) &&
-              latestReview.sources
-                .length >
-                0 && (
-                <div
-                  style={{
-                    marginTop:
-                      22,
-
-                    paddingTop:
-                      16,
-
-                    borderTop:
-                      "1px solid #e7eaf0",
-                  }}
-                >
-                  <strong
-                    style={{
-                      display:
-                        "block",
-
-                      marginBottom:
-                        9,
-
-                      color:
-                        "#26344f",
-
-                      fontSize:
-                        13,
-                    }}
-                  >
-                    Quellen
-                  </strong>
-
-                  <div
-                    style={{
-                      display:
-                        "flex",
-
-                      flexDirection:
-                        "column",
-
-                      gap:
-                        7,
-                    }}
-                  >
-                    {latestReview.sources.map(
-                      (
-                        source,
-                        index
-                      ) => {
-                        if (
-                          !source.url
-                        ) {
-                          return null;
-                        }
-
-                        return (
-                          <a
-                            key={
-                              `${source.url}-${index}`
-                            }
-                            href={
-                              source.url
-                            }
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{
-                              color:
-                                "#3759a8",
-
-                              fontSize:
-                                12,
-
-                              lineHeight:
-                                1.45,
-
-                              textDecoration:
-                                "none",
-
-                              overflowWrap:
-                                "anywhere",
-                            }}
-                          >
-                            {source.title ??
-                              source.url}
-                          </a>
-                        );
-                      }
-                    )}
-                  </div>
-                </div>
-              )}
-          </>
-        ) : (
-          <DashboardEmpty
-            title="Noch kein KI-Review"
-            text="Erstelle deinen ersten Review. Gemini analysiert die aktuellen Depotkennzahlen und recherchiert relevante aktuelle Nachrichten."
-          />
+          </details>
         )}
-      </section>
+    </>
+  ) : (
+    <DashboardEmpty
+      title="Noch kein KI-Review"
+      text="Erstelle deinen ersten Review. Gemini analysiert die aktuellen Depotkennzahlen und recherchiert relevante aktuelle Nachrichten."
+    />
+  )}
+</section>
 
       <section className="grid three">
         <div className="card">
@@ -2734,153 +2673,388 @@ function ReviewContent({
 }: {
   text: string;
 }) {
-  const lines =
-    text.split(
-      "\n"
+  const lines = text.split(
+    "\n"
+  );
+
+  const summaryStart =
+    lines.findIndex((line) => {
+      const normalized =
+        line
+          .trim()
+          .toLowerCase();
+
+      return (
+        normalized ===
+          "## kurzfazit" ||
+        normalized ===
+          "### kurzfazit"
+      );
+    });
+
+  let summaryLines:
+    string[] = [];
+
+  let detailLines:
+    string[] = [];
+
+  if (summaryStart >= 0) {
+    const nextHeading =
+      lines.findIndex(
+        (line, index) =>
+          index >
+            summaryStart &&
+          line
+            .trim()
+            .startsWith(
+              "## "
+            )
+      );
+
+    const summaryEnd =
+      nextHeading >= 0
+        ? nextHeading
+        : lines.length;
+
+    summaryLines =
+      lines.slice(
+        summaryStart,
+        summaryEnd
+      );
+
+    detailLines = [
+      ...lines.slice(
+        0,
+        summaryStart
+      ),
+      ...lines.slice(
+        summaryEnd
+      ),
+    ].filter(
+      (line) =>
+        line.trim()
+          .length > 0
     );
+  } else {
+    const firstHeading =
+      lines.findIndex(
+        (line) =>
+          line
+            .trim()
+            .startsWith(
+              "## "
+            )
+      );
+
+    if (firstHeading > 0) {
+      summaryLines =
+        lines.slice(
+          0,
+          firstHeading
+        );
+
+      detailLines =
+        lines.slice(
+          firstHeading
+        );
+    } else {
+      summaryLines =
+        lines.slice(
+          0,
+          Math.min(
+            3,
+            lines.length
+          )
+        );
+
+      detailLines =
+        lines.slice(
+          Math.min(
+            3,
+            lines.length
+          )
+        );
+    }
+  }
+
+  const renderInlineText = (
+    value: string
+  ) => {
+    const parts =
+      value.split(
+        /(\*\*.+?\*\*)/g
+      );
+
+    return parts.map(
+      (
+        part,
+        index
+      ) => {
+        if (
+          part.startsWith(
+            "**"
+          ) &&
+          part.endsWith(
+            "**"
+          )
+        ) {
+          return (
+            <strong
+              key={
+                index
+              }
+              style={{
+                color:
+                  "#26344f",
+                fontWeight:
+                  700,
+              }}
+            >
+              {part.slice(
+                2,
+                -2
+              )}
+            </strong>
+          );
+        }
+
+        return part;
+      }
+    );
+  };
+
+  const renderLines = (
+    content:
+      string[]
+  ) => {
+    return content.map(
+      (
+        rawLine,
+        index
+      ) => {
+        const line =
+          rawLine.trim();
+
+        if (!line) {
+          return (
+            <div
+              key={
+                index
+              }
+              style={{
+                height: 8,
+              }}
+            />
+          );
+        }
+
+        if (
+          line
+            .toLowerCase()
+            .startsWith(
+              "## kurzfazit"
+            ) ||
+          line
+            .toLowerCase()
+            .startsWith(
+              "### kurzfazit"
+            )
+        ) {
+          return (
+            <div
+              key={
+                index
+              }
+              style={{
+                marginBottom:
+                  8,
+                color:
+                  "#697386",
+                fontSize:
+                  11,
+                fontWeight:
+                  700,
+                letterSpacing:
+                  "0.06em",
+                textTransform:
+                  "uppercase",
+              }}
+            >
+              Kurzfazit
+            </div>
+          );
+        }
+
+        if (
+          line.startsWith(
+            "## "
+          )
+        ) {
+          return (
+            <h3
+              key={
+                index
+              }
+              style={{
+                margin:
+                  "18px 0 7px",
+                color:
+                  "#26344f",
+                fontSize: 15,
+              }}
+            >
+              {renderInlineText(
+                line.slice(
+                  3
+                )
+              )}
+            </h3>
+          );
+        }
+
+        if (
+          line.startsWith(
+            "### "
+          )
+        ) {
+          return (
+            <h4
+              key={
+                index
+              }
+              style={{
+                margin:
+                  "14px 0 6px",
+                color:
+                  "#26344f",
+                fontSize: 13,
+              }}
+            >
+              {renderInlineText(
+                line.slice(
+                  4
+                )
+              )}
+            </h4>
+          );
+        }
+
+        if (
+          line.startsWith(
+            "- "
+          ) ||
+          line.startsWith(
+            "* "
+          )
+        ) {
+          return (
+            <div
+              key={
+                index
+              }
+              style={{
+                display:
+                  "flex",
+                gap: 8,
+                margin:
+                  "4px 0",
+              }}
+            >
+              <span
+                style={{
+                  color:
+                    "#929aa7",
+                }}
+              >
+                •
+              </span>
+
+              <span>
+                {renderInlineText(
+                  line.slice(
+                    2
+                  )
+                )}
+              </span>
+            </div>
+          );
+        }
+
+        return (
+          <p
+            key={index}
+            style={{
+              margin:
+                "6px 0",
+            }}
+          >
+            {renderInlineText(
+              line
+            )}
+          </p>
+        );
+      }
+    );
+  };
 
   return (
     <div
       style={{
         color:
           "#3d4657",
-
-        fontSize:
-          13,
-
-        lineHeight:
-          1.7,
+        fontSize: 13,
+        lineHeight: 1.7,
       }}
     >
-      {lines.map(
-        (
-          rawLine,
-          index
-        ) => {
-          const line =
-            rawLine.trim();
+      <div
+        style={{
+          padding:
+            "14px 16px",
+          border:
+            "1px solid #e7eaf0",
+          borderRadius: 12,
+          background:
+            "#f8f9fb",
+        }}
+      >
+        {renderLines(
+          summaryLines
+        )}
+      </div>
 
-          if (!line) {
-            return (
-              <div
-                key={
-                  index
-                }
-                style={{
-                  height:
-                    8,
-                }}
-              />
-            );
-          }
+      {detailLines.length >
+        0 && (
+        <details
+          style={{
+            marginTop: 12,
+          }}
+        >
+          <summary
+            style={{
+              color:
+                "#3759a8",
+              fontSize: 12,
+              fontWeight: 650,
+              cursor:
+                "pointer",
+              userSelect:
+                "none",
+            }}
+          >
+            Detaillierte Analyse
+            anzeigen
+          </summary>
 
-          if (
-            line.startsWith(
-              "## "
-            )
-          ) {
-            return (
-              <h3
-                key={
-                  index
-                }
-                style={{
-                  margin:
-                    "18px 0 7px",
-
-                  color:
-                    "#26344f",
-
-                  fontSize:
-                    15,
-                }}
-              >
-                {line.slice(
-                  3
-                )}
-              </h3>
-            );
-          }
-
-          if (
-            line.startsWith(
-              "### "
-            )
-          ) {
-            return (
-              <h4
-                key={
-                  index
-                }
-                style={{
-                  margin:
-                    "14px 0 6px",
-
-                  color:
-                    "#26344f",
-
-                  fontSize:
-                    13,
-                }}
-              >
-                {line.slice(
-                  4
-                )}
-              </h4>
-            );
-          }
-
-          if (
-            line.startsWith(
-              "- "
-            ) ||
-            line.startsWith(
-              "* "
-            )
-          ) {
-            return (
-              <div
-                key={
-                  index
-                }
-                style={{
-                  display:
-                    "flex",
-
-                  gap:
-                    8,
-
-                  margin:
-                    "4px 0",
-                }}
-              >
-                <span>
-                  •
-                </span>
-
-                <span>
-                  {line.slice(
-                    2
-                  )}
-                </span>
-              </div>
-            );
-          }
-
-          return (
-            <p
-              key={
-                index
-              }
-              style={{
-                margin:
-                  "6px 0",
-              }}
-            >
-              {line}
-            </p>
-          );
-        }
+          <div
+            style={{
+              marginTop: 14,
+            }}
+          >
+            {renderLines(
+              detailLines
+            )}
+          </div>
+        </details>
       )}
     </div>
   );

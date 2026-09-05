@@ -385,6 +385,42 @@ export default async function Home(
       userId
     );
 
+
+    const {
+      data: monthlyReports,
+    } = await supabase
+      .from("monthly_reports")
+      .select(`
+        id,
+        report_month,
+        monthly_return,
+        generated_at
+      `)
+      .eq(
+        "user_id",
+        userId
+      )
+      .eq(
+        "status",
+        "completed"
+      )
+      .order(
+        "report_month",
+        {
+          ascending: false,
+        }
+      )
+      .limit(4);
+
+      const latestMonthlyReport =
+  monthlyReports?.[0] ?? null;
+
+const latestReportWasCreatedToday =
+  latestMonthlyReport
+    ? isTodayInBerlin(
+        latestMonthlyReport.generated_at
+      )
+    : false;
   /*
    * AKTUELLE POSITIONEN
    */
@@ -1471,7 +1507,7 @@ export default async function Home(
       <div className="topbar">
         <div className="brand">
           <h1>
-            DepotCockpit
+            MyPortfolio
           </h1>
 
           <p>
@@ -1629,7 +1665,66 @@ export default async function Home(
           }
         />
       )}
+{latestMonthlyReport &&
+latestReportWasCreatedToday && (
+  <Link
+    href={`/reports/${latestMonthlyReport.id}`}
+    className="card"
+    style={{
+      display:
+        "flex",
 
+      alignItems:
+        "center",
+
+      justifyContent:
+        "space-between",
+
+      gap:
+        16,
+
+      marginBottom:
+        20,
+
+      padding:
+        16,
+
+      textDecoration:
+        "none",
+
+      color:
+        "inherit",
+    }}
+  >
+    <div>
+      <div
+        style={{
+          fontWeight:
+            700,
+
+          marginBottom:
+            4,
+        }}
+      >
+        ✨ Neuer Monatsreport verfügbar
+      </div>
+
+      <div
+        className="meta"
+      >
+        Dein Report für{" "}
+        {formatReportMonth(
+          latestMonthlyReport.report_month
+        )}{" "}
+        wurde heute erstellt.
+      </div>
+    </div>
+
+    <strong>
+      Report ansehen →
+    </strong>
+  </Link>
+)}
       <section className="grid kpis">
         <div className="card">
           <div className="kpi-label">
@@ -1659,7 +1754,7 @@ export default async function Home(
 
         <div className="card">
           <div className="kpi-label">
-            Einstand ca.
+            Einstand
           </div>
 
           <div className="kpi-value">
@@ -2470,15 +2565,154 @@ export default async function Home(
         </div>
 
         <div className="card">
-          <h2>
-            Wochenreports
-          </h2>
+  <div
+    style={{
+      display:
+        "flex",
 
-          <DashboardEmpty
-            title="Noch keine Reports"
-            text="Die Reports bauen wir auf den echten Kurs- und FX-Daten auf."
-          />
-        </div>
+      justifyContent:
+        "space-between",
+
+      alignItems:
+        "center",
+
+      gap:
+        12,
+
+      marginBottom:
+        10,
+    }}
+  >
+    <h2
+      style={{
+        margin:
+          0,
+      }}
+    >
+      Monatsreports
+    </h2>
+
+    <Link
+      href="/reports"
+      className="meta"
+      style={{
+        textDecoration:
+          "none",
+      }}
+    >
+      Alle ansehen →
+    </Link>
+  </div>
+
+  {monthlyReports &&
+  monthlyReports.length >
+    0 ? (
+    <div
+      style={{
+        display:
+          "flex",
+
+        flexDirection:
+          "column",
+      }}
+    >
+      {monthlyReports.map(
+        (
+          report
+        ) => (
+          <Link
+            key={
+              report.id
+            }
+            href={`/reports/${report.id}`}
+            style={{
+              display:
+                "flex",
+
+              alignItems:
+                "center",
+
+              justifyContent:
+                "space-between",
+
+              gap:
+                16,
+
+              padding:
+                "12px 0",
+
+              borderBottom:
+                "1px solid #edf0f4",
+
+              color:
+                "inherit",
+
+              textDecoration:
+                "none",
+            }}
+          >
+            <div>
+              <strong>
+                Monatsreport{" "}
+                {formatReportMonth(
+                  report.report_month
+                )}
+              </strong>
+
+              <div
+                className="meta"
+                style={{
+                  marginTop:
+                    3,
+                }}
+              >
+                Erstellt{" "}
+                {formatDateTime(
+                  report.generated_at
+                )}
+              </div>
+            </div>
+
+            {report.monthly_return !==
+              null && (
+              <strong
+                className={
+                  Number(
+                    report.monthly_return
+                  ) >= 0
+                    ? "positive"
+                    : "negative"
+                }
+              >
+                {Number(
+                  report.monthly_return
+                ) >= 0
+                  ? "+"
+                  : ""}
+
+                {Number(
+                  report.monthly_return
+                ).toLocaleString(
+                  "de-DE",
+                  {
+                    maximumFractionDigits:
+                      2,
+                  }
+                )}
+                %
+              </strong>
+            )}
+          </Link>
+        )
+      )}
+    </div>
+  ) : (
+    <DashboardEmpty
+      title="Noch kein Monatsreport"
+      text="Erstelle deinen ersten Report über die Reports-Seite."
+    />
+  )}
+</div>
       </section>
     </main>
   );
@@ -4392,7 +4626,72 @@ function berlinDateString() {
 
   return `${year}-${month}-${day}`;
 }
+function formatReportMonth(
+  value: string
+) {
+  const date =
+    new Date(
+      `${value.slice(
+        0,
+        7
+      )}-01T12:00:00Z`
+    );
 
+  return new Intl.DateTimeFormat(
+    "de-DE",
+    {
+      month:
+        "long",
+
+      year:
+        "numeric",
+
+      timeZone:
+        "UTC",
+    }
+  ).format(
+    date
+  );
+}
+
+function isTodayInBerlin(
+  value: string
+) {
+  const now =
+    new Date();
+
+  const date =
+    new Date(
+      value
+    );
+
+  const formatter =
+    new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone:
+          "Europe/Berlin",
+
+        year:
+          "numeric",
+
+        month:
+          "2-digit",
+
+        day:
+          "2-digit",
+      }
+    );
+
+  return (
+    formatter.format(
+      now
+    ) ===
+    formatter.format(
+      date
+    )
+  );
+}
 function DashboardEmpty({
   title,
   text,
@@ -4411,4 +4710,6 @@ function DashboardEmpty({
       </p>
     </div>
   );
+
+
 }

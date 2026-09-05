@@ -2,8 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "DepotCockpit",
-  description: "Aggregiertes Portfolio-Dashboard für mehrere Depots",
+  title: "MyPortfolio",
+  description: "Dein Space für strategisches Portfolio-Management",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

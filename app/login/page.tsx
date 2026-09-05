@@ -75,7 +75,7 @@ export default async function LoginPage({
         <section className={styles.authPanel}>
           <div className={styles.authContent}>
             <div className={styles.mobileLogo}>
-              DepotCockpit
+              MyPortfolio
             </div>
 
             <div className={styles.heading}>
